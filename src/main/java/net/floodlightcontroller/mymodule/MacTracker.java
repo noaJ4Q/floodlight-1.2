@@ -15,11 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class MacTracker implements IOFMessageListener, IFloodlightModule {
-    protected Set<Long> macAddresses;
+    protected Set<Long> macAddresses = new HashSet<>();
 
     protected static final Logger logger = LoggerFactory.getLogger(MacTracker.class);
     protected IFloodlightProviderService floodlightProvider;
