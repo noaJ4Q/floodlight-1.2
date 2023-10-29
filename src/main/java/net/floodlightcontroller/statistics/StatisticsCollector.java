@@ -62,6 +62,9 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 	private static final HashMap<NodePortTuple, SwitchPortBandwidth> portStats = new HashMap<NodePortTuple, SwitchPortBandwidth>();
 	private static final HashMap<NodePortTuple, SwitchPortBandwidth> tentativePortStats = new HashMap<NodePortTuple, SwitchPortBandwidth>();
 
+	private static final String PortTxThreshold = "PortTxThreshold";
+	private static final String PortRxThreshold = "PortRxThreshold";
+
 	/**
 	 * Run periodically to collect all port statistics. This only collects
 	 * bandwidth stats right now, but it could be expanded to record other
@@ -113,6 +116,11 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 							} else {
 								rxBytesCounted = pse.getRxBytes().subtract(spb.getPriorByteValueRx());
 							}
+
+							if (rxBytesCounted.getValue() > Long.parseLong(PortRxThreshold)){
+								log.info("Reception threshold exceeded");
+							}
+
 							if (spb.getPriorByteValueTx().compareTo(pse.getTxBytes()) > 0) { /* overflow */
 								U64 upper = U64.NO_MASK.subtract(spb.getPriorByteValueTx());
 								U64 lower = pse.getTxBytes();
@@ -120,6 +128,11 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 							} else {
 								txBytesCounted = pse.getTxBytes().subtract(spb.getPriorByteValueTx());
 							}
+
+							if (txBytesCounted.getValue() > Long.parseLong(PortTxThreshold)){
+								log.info("Transmission threshold exceeded");
+							}
+
 							long timeDifSec = (System.currentTimeMillis() - spb.getUpdateTime()) / MILLIS_PER_SEC;
 							portStats.put(npt, SwitchPortBandwidth.of(npt.getNodeId(), npt.getPortId(), 
 									U64.ofRaw((rxBytesCounted.getValue() * BITS_PER_BYTE) / timeDifSec), 
