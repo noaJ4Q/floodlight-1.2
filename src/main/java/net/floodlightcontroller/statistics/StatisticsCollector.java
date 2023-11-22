@@ -38,9 +38,6 @@ import net.floodlightcontroller.topology.NodePortTuple;
 
 public class StatisticsCollector implements IFloodlightModule, IStatisticsService {
 
-	private static int portTxThreshold = 500000;
-	private static int portRxThreshold = 500000;
-
 	private static final Logger log = LoggerFactory.getLogger(StatisticsCollector.class);
 
 	private static IOFSwitchService switchService;
@@ -66,6 +63,12 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 	private static final HashMap<NodePortTuple, SwitchPortBandwidth> portStats = new HashMap<NodePortTuple, SwitchPortBandwidth>();
 	private static final HashMap<NodePortTuple, SwitchPortBandwidth> tentativePortStats = new HashMap<NodePortTuple, SwitchPortBandwidth>();
+
+	private static final String THRESHOLD_TX_PORT_STR = "PortTxThreshold";
+	private static final String THRESHOLD_RX_PORT_STR = "PortRxThreshold";
+
+	private static int portTxThreshold = 10;
+	private static int portRxThreshold = 10;
 
 	/**
 	 * Run periodically to collect all port statistics. This only collects
@@ -109,8 +112,6 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			}
 		}
 	}
-
-
 
 	private class PortStatsCollector implements Runnable {
 
@@ -265,7 +266,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		log.info("Port statistics collection interval set to {}s", portStatsInterval);
 
 
-		if (config.containsKey("PortTxThreshold")) {
+		if (config.containsKey(THRESHOLD_TX_PORT_STR)) {
 			try {
 				portTxThreshold = Integer.parseInt(config.get("PortTxThreshold").trim());
 			} catch (Exception e) {
@@ -273,7 +274,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			}
 		}
 
-		if (config.containsKey("PortRxThreshold")) {
+		if (config.containsKey(THRESHOLD_RX_PORT_STR)) {
 			try {
 				portRxThreshold = Integer.parseInt(config.get("PortRxThreshold").trim());
 			} catch (Exception e) {
