@@ -103,11 +103,12 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 						log.info("Flujo en el swtich "+e.getKey()+
 								" | Cookie: "+fse.getCookie()+
 								" Paquetes: "+fse.getPacketCount().getValue()+
-								" Bytes: "+fse.getByteCount().getValue()+"\n");
+								" Bytes: "+fse.getByteCount().getValue());
 
 					}
 				}
 			}
+			log.info("\n");
 		}
 	}
 
