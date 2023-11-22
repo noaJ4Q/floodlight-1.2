@@ -13,6 +13,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.projectfloodlight.openflow.protocol.*;
+import org.projectfloodlight.openflow.protocol.action.OFAction;
 import org.projectfloodlight.openflow.protocol.match.Match;
 import org.projectfloodlight.openflow.protocol.ver13.OFMeterSerializerVer13;
 import org.projectfloodlight.openflow.types.DatapathId;
@@ -102,9 +103,15 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 					log.info("Flow entries switch: "+e.getKey());
 					int i = 0;
 					for (OFFlowStatsEntry fse : fsr.getEntries()) {
-						log.info("\t"+i+") Action :"+fse.getActions()+
+						log.info("\t"+i+")"+
 								" PacketsCount: "+fse.getPacketCount().getValue()+
-								" BytesCount: "+fse.getByteCount().getValue());
+								" BytesCount: "+fse.getByteCount().getValue()+
+								" Actions: ");
+						List<OFAction> actions = fse.getActions();
+						for (OFAction action: actions){
+							log.info("\t\t"+action.toString());
+						}
+
 						i++;
 					}
 				}
