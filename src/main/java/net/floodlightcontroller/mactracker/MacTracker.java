@@ -14,15 +14,12 @@ import org.projectfloodlight.openflow.protocol.OFType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public class MacTracker implements IOFMessageListener, IFloodlightModule {
     protected Set<Long> macAddresses = new HashSet<>();
-
-    protected static final Logger logger = LoggerFactory.getLogger(MacTracker.class);
+    protected static Logger logger = LoggerFactory.getLogger(MacTracker.class);
     protected IFloodlightProviderService floodlightProvider;
 
     @Override
@@ -42,9 +39,7 @@ public class MacTracker implements IOFMessageListener, IFloodlightModule {
 
     @Override
     public Command receive(IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
-        Ethernet eth =
-                IFloodlightProviderService.bcStore.get(cntx,
-                        IFloodlightProviderService.CONTEXT_PI_PAYLOAD);
+        Ethernet eth = IFloodlightProviderService.bcStore.get(cntx, IFloodlightProviderService.CONTEXT_PI_PAYLOAD);
 
         Long sourceMACHash = eth.getSourceMACAddress().getLong();
         if (!macAddresses.contains(sourceMACHash)) {
@@ -69,12 +64,16 @@ public class MacTracker implements IOFMessageListener, IFloodlightModule {
 
     @Override
     public Collection<Class<? extends IFloodlightService>> getModuleDependencies() {
-        return null;
+        Collection<Class<? extends IFloodlightService>> l = new ArrayList<Class<? extends IFloodlightService>>();
+        l.add(IFloodlightProviderService.class);
+        return l;
     }
 
     @Override
     public void init(FloodlightModuleContext context) throws FloodlightModuleException {
         floodlightProvider = context.getServiceImpl(IFloodlightProviderService.class);
+        macAddresses = new ConcurrentSkipListSet<Long>();
+        logger = LoggerFactory.getLogger(MacTracker.class);
     }
 
     @Override
