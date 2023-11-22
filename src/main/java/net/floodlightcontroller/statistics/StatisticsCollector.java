@@ -155,10 +155,15 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 				for (OFStatsReply r: e.getValue()){
 					OFFlowStatsReply fsr = (OFFlowStatsReply) r;
 					for (OFFlowStatsEntry fse : fsr.getEntries()){
-						List<OFAction> actions = fse.getActions();
-						U64 byteCount = fse.getByteCount();
-						long durationNsec =  fse.getDurationNsec();
-						int idleTimeout = fse.getIdleTimeout();
+
+						log.info("Flujo en el switch {}:", e.getKey());
+						log.info("Cookie: {}", fse.getCookie());
+						log.info("Duración: {} segundos", fse.getDurationSec());
+						log.info("Paquetes enviados: {}", fse.getPacketCount().getValue());
+						log.info("Bytes enviados: {}", fse.getByteCount().getValue());
+						log.info("Table ID: {}", fse.getTableId());
+						log.info("\n");
+
 					}
 				}
 			}
