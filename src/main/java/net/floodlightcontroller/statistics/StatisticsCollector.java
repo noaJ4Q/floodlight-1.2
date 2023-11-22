@@ -38,7 +38,7 @@ import net.floodlightcontroller.topology.NodePortTuple;
 
 public class StatisticsCollector implements IFloodlightModule, IStatisticsService {
 
-	private static final Logger log = LoggerFactory.getLogger(StatisticsCollector.class);
+	private static Logger log = LoggerFactory.getLogger(StatisticsCollector.class);
 
 	private static IOFSwitchService switchService;
 	private static IThreadPoolService threadPoolService;
@@ -51,7 +51,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 
 	private static final Logger logFlowStatsCollector = LoggerFactory.getLogger(FlowStatsCollector.class);
-	private static int flowStatsInterval = 10;
+	private static final int flowStatsInterval = 10;
 	private static ScheduledFuture<?> flowStatsCollector;
 
 
@@ -100,12 +100,17 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 				for (OFStatsReply r : e.getValue()) {
 					OFFlowStatsReply fsr = (OFFlowStatsReply) r;
 					for (OFFlowStatsEntry fse : fsr.getEntries()) {
+						log.info("Flujo en el swtich "+e.getKey()+" Cookie: "+fse.getCookie()+" Paquetes: "+fse.getPacketCount().getValue()+" Bytes: "+fse.getByteCount().getValue());
+
+						/*
 						log.info("Flujo en el switch {}:", e.getKey());
 						log.info("Cookie: {}", fse.getCookie());
 						log.info("Duración: {} segundos", fse.getDurationSec());
 						log.info("Paquetes enviados: {}", fse.getPacketCount().getValue());
 						log.info("Bytes enviados: {}", fse.getByteCount().getValue());
 						log.info("Table ID: {}", fse.getTableId());
+
+						 */
 
 					}
 				}
@@ -159,6 +164,8 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 									pse.getRxBytes(), pse.getTxBytes())
 							);
 
+							// no mostrando ancho de banda para testeo :v
+							/*
 							long txBandwidth = (rxBytesCounted.getValue() * BITS_PER_BYTE) / timeDifSec;
 							long rxBandwidth = (txBytesCounted.getValue() * BITS_PER_BYTE) / timeDifSec;
 
@@ -168,6 +175,8 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 							if (rxBandwidth > portRxThreshold) {
 								log.info("El ancho de banda de RX en el puerto {} excede el umbral: {}", npt, portRxThreshold);
 							}
+
+							 */
 						} else { /* initialize */
 							tentativePortStats.put(npt, SwitchPortBandwidth.of(npt.getNodeId(), npt.getPortId(), U64.ZERO, U64.ZERO, pse.getRxBytes(), pse.getTxBytes()));
 						}
@@ -245,6 +254,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		switchService = context.getServiceImpl(IOFSwitchService.class);
 		threadPoolService = context.getServiceImpl(IThreadPoolService.class);
 		restApiService = context.getServiceImpl(IRestApiService.class);
+		log = LoggerFactory.getLogger(StatisticsCollector.class);
 
 		Map<String, String> config = context.getConfigParams(this);
 		if (config.containsKey(ENABLED_STR)) {
