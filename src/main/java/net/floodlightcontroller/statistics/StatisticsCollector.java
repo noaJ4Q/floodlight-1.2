@@ -99,11 +99,11 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			for (Entry<DatapathId, List<OFStatsReply>> e : replies.entrySet()) {
 				for (OFStatsReply r : e.getValue()) {
 					OFFlowStatsReply fsr = (OFFlowStatsReply) r;
+					log.info("Flow entries switch: "+e.getKey());
 					for (OFFlowStatsEntry fse : fsr.getEntries()) {
-						log.info("Flow entry swtich "+e.getKey()+
-								" Action :"+fse.getActions()+
-								" PacketsCount: "+fse.getPacketCount().getValue()+
-								" BytesCount: "+fse.getByteCount().getValue());
+						log.info(//"\tAction :"+fse.getActions()+
+								" \tPacketsCount: "+fse.getPacketCount().getValue()+
+								" \tBytesCount: "+fse.getByteCount().getValue());
 
 					}
 				}
