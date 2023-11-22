@@ -107,7 +107,6 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 					}
 				}
-				log.info("\n");
 			}
 		}
 	}
