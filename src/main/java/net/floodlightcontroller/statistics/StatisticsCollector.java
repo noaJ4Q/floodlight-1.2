@@ -100,10 +100,10 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 				for (OFStatsReply r : e.getValue()) {
 					OFFlowStatsReply fsr = (OFFlowStatsReply) r;
 					for (OFFlowStatsEntry fse : fsr.getEntries()) {
-						log.info("Flujo en el swtich "+e.getKey()+
-								" | Cookie: "+fse.getCookie()+
-								" Paquetes: "+fse.getPacketCount().getValue()+
-								" Bytes: "+fse.getByteCount().getValue());
+						log.info("Flow entry swtich "+e.getKey()+
+								" Action :"+fse.getActions()+
+								" PacketsCount: "+fse.getPacketCount().getValue()+
+								" BytesCount: "+fse.getByteCount().getValue());
 
 					}
 				}
