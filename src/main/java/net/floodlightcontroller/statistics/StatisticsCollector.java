@@ -108,6 +108,10 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 								" BytesCount: "+fse.getByteCount().getValue());
 
 						i++;
+
+						// consierando que existen flows ya insertados en cada switch:
+						// la cantidad de matches (packetCount) en un flow indica la cantidad de veces que se repiten cada parámetro (src_port, dst_port, src_ip, dst_ip)
+
 					}
 				}
 			}
