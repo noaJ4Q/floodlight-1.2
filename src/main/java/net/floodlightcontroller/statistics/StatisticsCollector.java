@@ -15,11 +15,9 @@ import java.util.concurrent.TimeUnit;
 import org.projectfloodlight.openflow.protocol.*;
 import org.projectfloodlight.openflow.protocol.action.OFAction;
 import org.projectfloodlight.openflow.protocol.match.Match;
+import org.projectfloodlight.openflow.protocol.match.MatchField;
 import org.projectfloodlight.openflow.protocol.ver13.OFMeterSerializerVer13;
-import org.projectfloodlight.openflow.types.DatapathId;
-import org.projectfloodlight.openflow.types.OFPort;
-import org.projectfloodlight.openflow.types.TableId;
-import org.projectfloodlight.openflow.types.U64;
+import org.projectfloodlight.openflow.types.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,24 +96,45 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		public void run() {
 			Map<DatapathId, List<OFStatsReply>> replies = getSwitchStatistics(switchService.getAllSwitchDpids(), OFStatsType.FLOW);
 			for (Entry<DatapathId, List<OFStatsReply>> e : replies.entrySet()) {
-				for (OFStatsReply r : e.getValue()) {
+				for (OFStatsReply r : e.getValue()) { // dentro de un switch
 					OFFlowStatsReply fsr = (OFFlowStatsReply) r;
 					log.info("Flow entries switch: "+e.getKey());
 					int i = 0;
+
+					HashMap<IPv4Address, Integer> srcIPTable = new HashMap<>();
+					HashMap<IPv4Address, Integer> dstIPTable = new HashMap<>();
+					HashMap<TransportPort, Integer> srcPortTable = new HashMap<>();
+					HashMap<TransportPort, Integer> dstPortTable = new HashMap<>();
+
 					for (OFFlowStatsEntry fse : fsr.getEntries()) {
 						log.info("\t"+i+")"+
 								" PacketsCount: "+fse.getPacketCount().getValue()+
-								" BytesCount: "+fse.getByteCount().getValue());
+								" BytesCount: "+fse.getByteCount().getValue()+
+								" SrcPort: "+fse.getMatch().get(MatchField.TCP_SRC)+
+								" SrcIP: "+fse.getMatch().get(MatchField.IPV4_SRC));
 
 						i++;
 
 						// consierando que existen flows ya insertados en cada switch:
 						// la cantidad de matches (packetCount) en un flow indica la cantidad de veces que se repiten cada parámetro (src_port, dst_port, src_ip, dst_ip)
+						// cada flow entry crea un conjunto de filas nuevas en la tabla de un parámetro
+						// deben existir tablas para cada parámetro
 
+						calculateEntropy(fse);
 					}
 				}
 			}
 		}
+	}
+
+	private void calculateEntropy(OFFlowStatsEntry flowStats){
+		long count = flowStats.getPacketCount().getValue();
+		Match match = flowStats.getMatch();
+
+		IPv4Address srcIP = match.get(MatchField.IPV4_DST);
+		IPv4Address dstIP = match.get(MatchField.IPV4_DST);
+		TransportPort srcPort = match.get(MatchField.TCP_DST);
+		TransportPort dstPort = match.get(MatchField.TCP_DST);
 	}
 
 	private class PortStatsCollector implements Runnable {
