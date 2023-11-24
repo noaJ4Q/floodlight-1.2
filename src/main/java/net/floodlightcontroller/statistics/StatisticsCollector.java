@@ -103,8 +103,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 					HashMap<IPv4Address, Integer> srcIPTable = new HashMap<>();
 					HashMap<IPv4Address, Integer> dstIPTable = new HashMap<>();
-					HashMap<TransportPort, Integer> srcPortTable = new HashMap<>();
-					HashMap<TransportPort, Integer> dstPortTable = new HashMap<>();
+					HashMap<OFPort, Integer> inPortTable = new HashMap<>();
 
 					for (OFFlowStatsEntry fse : fsr.getEntries()) {
 						log.info("\t"+i+")"+
@@ -133,6 +132,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 		IPv4Address srcIP = match.get(MatchField.IPV4_DST);
 		IPv4Address dstIP = match.get(MatchField.IPV4_DST);
+		OFPort inPort = match.get(MatchField.IN_PORT);
 		TransportPort srcPort = match.get(MatchField.TCP_DST);
 		TransportPort dstPort = match.get(MatchField.TCP_DST);
 	}
