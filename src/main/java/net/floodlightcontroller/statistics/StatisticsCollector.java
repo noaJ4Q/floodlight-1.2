@@ -110,7 +110,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 						log.info("\t"+i+")"+
 								" PacketsCount: "+fse.getPacketCount().getValue()+
 								" BytesCount: "+fse.getByteCount().getValue()+
-								" SrcPort: "+fse.getMatch().get(MatchField.TCP_SRC)+
+								" InPort: "+fse.getMatch().get(MatchField.IN_PORT)+
 								" SrcIP: "+fse.getMatch().get(MatchField.IPV4_SRC));
 
 						i++;
