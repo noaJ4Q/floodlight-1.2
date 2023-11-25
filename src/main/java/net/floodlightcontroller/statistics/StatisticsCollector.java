@@ -128,14 +128,14 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 						srcIPTable.put(srcIP, srcIPTable.get(srcIP) == null ? 0 : srcIPTable.get(srcIP) + count);
 						dstIPTable.put(dstIP, dstIPTable.get(dstIP) == null ? 0 : dstIPTable.get(dstIP) + count);
 						inPortTable.put(inPort, inPortTable.get(inPort) == null ? 0 : inPortTable.get(inPort) + count);
-
-						double srcIPTableEntropy = calculateEntropy(srcIPTable);
-						double dstIPTableEntropy = calculateEntropy(dstIPTable);
-						double inPortTableEntropy = calculateEntropy(inPortTable);
-
-						log.info("\tSrcIPTable: "+srcIPTableEntropy+" DstIPTable: "+dstIPTableEntropy+" InPortTable: "+inPortTableEntropy);
 					}
 				}
+
+				double srcIPTableEntropy = calculateEntropy(srcIPTable);
+				double dstIPTableEntropy = calculateEntropy(dstIPTable);
+				double inPortTableEntropy = calculateEntropy(inPortTable);
+
+				log.info("ENTROPY SrcIPTable: "+srcIPTableEntropy+" DstIPTable: "+dstIPTableEntropy+" InPortTable: "+inPortTableEntropy);
 			}
 		}
 	}
