@@ -96,45 +96,44 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		public void run() {
 			Map<DatapathId, List<OFStatsReply>> replies = getSwitchStatistics(switchService.getAllSwitchDpids(), OFStatsType.FLOW);
 			for (Entry<DatapathId, List<OFStatsReply>> e : replies.entrySet()) {
+
+				HashMap<IPv4Address, Long> srcIPTable = new HashMap<>();
+				HashMap<IPv4Address, Long> dstIPTable = new HashMap<>();
+				HashMap<OFPort, Long> inPortTable = new HashMap<>();
+
 				for (OFStatsReply r : e.getValue()) { // dentro de un switch
 					OFFlowStatsReply fsr = (OFFlowStatsReply) r;
-					log.info("Flow entries switch: "+e.getKey());
+					log.info("Flow entries switch: " + e.getKey());
 					int i = 0;
 
-					HashMap<IPv4Address, Integer> srcIPTable = new HashMap<>();
-					HashMap<IPv4Address, Integer> dstIPTable = new HashMap<>();
-					HashMap<OFPort, Integer> inPortTable = new HashMap<>();
-
 					for (OFFlowStatsEntry fse : fsr.getEntries()) {
-						log.info("\t"+i+")"+
-								" PacketsCount: "+fse.getPacketCount().getValue()+
-								" BytesCount: "+fse.getByteCount().getValue()+
-								" InPort: "+fse.getMatch().get(MatchField.IN_PORT)+
-								" SrcIP: "+fse.getMatch().get(MatchField.IPV4_SRC));
-
+						log.info("\t" + i + ")" +
+								" PacketsCount: " + fse.getPacketCount().getValue() +
+								" SrcIP: " + fse.getMatch().get(MatchField.IPV4_SRC) +
+								" DstIP: " + fse.getMatch().get(MatchField.IPV4_DST));
 						i++;
 
-						// consierando que existen flows ya insertados en cada switch:
-						// la cantidad de matches (packetCount) en un flow indica la cantidad de veces que se repiten cada parámetro (src_port, dst_port, src_ip, dst_ip)
-						// cada flow entry crea un conjunto de filas nuevas en la tabla de un parámetro
-						// deben existir tablas para cada parámetro
+						// CONSIDERANDO QUE EXISTEN FLOW PRECONFIGURADOS EN CADA SWITCH:
 
-						calculateEntropy(fse);
+						// store statistics
+						long count = fse.getPacketCount().getValue();
+						Match match = fse.getMatch();
+
+						IPv4Address srcIP = match.get(MatchField.IPV4_DST);
+						IPv4Address dstIP = match.get(MatchField.IPV4_DST);
+						OFPort inPort = match.get(MatchField.IN_PORT);
+						//TransportPort srcPort = match.get(MatchField.TCP_DST);
+						//TransportPort dstPort = match.get(MatchField.TCP_DST);
+
+						srcIPTable.put(srcIP, srcIPTable.get(srcIP) == null ? 0 : srcIPTable.get(srcIP) + count);
+						dstIPTable.put(dstIP, dstIPTable.get(dstIP) == null ? 0 : dstIPTable.get(dstIP) + count);
+						inPortTable.put(inPort, inPortTable.get(inPort) == null ? 0 : inPortTable.get(inPort) + count);
+
+						log.info("SrcIPTable: "+srcIPTable.size()+" DstIPTable: "+dstIPTable.size()+" InPortTable: "+inPortTable.size());
 					}
 				}
 			}
 		}
-	}
-
-	private void calculateEntropy(OFFlowStatsEntry flowStats){
-		long count = flowStats.getPacketCount().getValue();
-		Match match = flowStats.getMatch();
-
-		IPv4Address srcIP = match.get(MatchField.IPV4_DST);
-		IPv4Address dstIP = match.get(MatchField.IPV4_DST);
-		OFPort inPort = match.get(MatchField.IN_PORT);
-		TransportPort srcPort = match.get(MatchField.TCP_DST);
-		TransportPort dstPort = match.get(MatchField.TCP_DST);
 	}
 
 	private class PortStatsCollector implements Runnable {
