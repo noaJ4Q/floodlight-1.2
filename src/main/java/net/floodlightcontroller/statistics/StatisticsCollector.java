@@ -95,18 +95,19 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 		public void run() {
 			Map<DatapathId, List<OFStatsReply>> replies = getSwitchStatistics(switchService.getAllSwitchDpids(), OFStatsType.FLOW);
-			for (Entry<DatapathId, List<OFStatsReply>> e : replies.entrySet()) {
 
-				HashMap<Object, Long> srcIPTable = new HashMap<>();
-				HashMap<Object, Long> dstIPTable = new HashMap<>();
-				HashMap<Object, Long> inPortTable = new HashMap<>();
+			HashMap<Object, Long> srcIPTable = new HashMap<>();
+			HashMap<Object, Long> dstIPTable = new HashMap<>();
+			HashMap<Object, Long> inPortTable = new HashMap<>();
+
+			for (Entry<DatapathId, List<OFStatsReply>> e : replies.entrySet()) {
 
 				for (OFStatsReply r : e.getValue()) { // dentro de un switch
 					OFFlowStatsReply fsr = (OFFlowStatsReply) r;
 					log.info("Flow entries switch: " + e.getKey());
 					int i = 0;
 
-					for (OFFlowStatsEntry fse : fsr.getEntries()) {
+					for (OFFlowStatsEntry fse : fsr.getEntries()) { // dentro de un flow
 						log.info("\t" + i + ")" +
 								" PacketsCount: " + fse.getPacketCount().getValue() +
 								" SrcIP: " + fse.getMatch().get(MatchField.IPV4_SRC) +
@@ -130,13 +131,13 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 						inPortTable.put(inPort, inPortTable.get(inPort) == null ? 0 : inPortTable.get(inPort) + count);
 					}
 				}
-
-				double srcIPTableEntropy = calculateEntropy(srcIPTable);
-				double dstIPTableEntropy = calculateEntropy(dstIPTable);
-				double inPortTableEntropy = calculateEntropy(inPortTable);
-
-				log.info("ENTROPY SrcIPTable: "+srcIPTableEntropy+" DstIPTable: "+dstIPTableEntropy+" InPortTable: "+inPortTableEntropy);
 			}
+
+			double srcIPTableEntropy = calculateEntropy(srcIPTable);
+			double dstIPTableEntropy = calculateEntropy(dstIPTable);
+			double inPortTableEntropy = calculateEntropy(inPortTable);
+
+			log.info("ENTROPY SrcIPTable: "+srcIPTableEntropy+" DstIPTable: "+dstIPTableEntropy+" InPortTable: "+inPortTableEntropy);
 		}
 	}
 
