@@ -97,9 +97,9 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			Map<DatapathId, List<OFStatsReply>> replies = getSwitchStatistics(switchService.getAllSwitchDpids(), OFStatsType.FLOW);
 			for (Entry<DatapathId, List<OFStatsReply>> e : replies.entrySet()) {
 
-				HashMap<IPv4Address, Long> srcIPTable = new HashMap<>();
-				HashMap<IPv4Address, Long> dstIPTable = new HashMap<>();
-				HashMap<OFPort, Long> inPortTable = new HashMap<>();
+				HashMap<Object, Long> srcIPTable = new HashMap<>();
+				HashMap<Object, Long> dstIPTable = new HashMap<>();
+				HashMap<Object, Long> inPortTable = new HashMap<>();
 
 				for (OFStatsReply r : e.getValue()) { // dentro de un switch
 					OFFlowStatsReply fsr = (OFFlowStatsReply) r;
@@ -129,11 +129,31 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 						dstIPTable.put(dstIP, dstIPTable.get(dstIP) == null ? 0 : dstIPTable.get(dstIP) + count);
 						inPortTable.put(inPort, inPortTable.get(inPort) == null ? 0 : inPortTable.get(inPort) + count);
 
-						log.info("SrcIPTable: "+srcIPTable.size()+" DstIPTable: "+dstIPTable.size()+" InPortTable: "+inPortTable.size());
+						double srcIPTableEntropy = calculateEntropy(srcIPTable);
+						double dstIPTableEntropy = calculateEntropy(dstIPTable);
+						double inPortTableEntropy = calculateEntropy(inPortTable);
+
+						log.info("\tSrcIPTable: "+srcIPTableEntropy+" DstIPTable: "+dstIPTableEntropy+" InPortTable: "+inPortTableEntropy);
 					}
 				}
 			}
 		}
+	}
+
+	private double calculateEntropy(HashMap<Object, Long> table){
+		double maxEntropy = Math.log(table.size())/Math.log(2);
+		long total = 0;
+		for (long amount: table.values()){
+			total += amount;
+		}
+		double entropy = 0;
+		for (Map.Entry<Object, Long> entry: table.entrySet()){
+			double probabilityEntry = (double) entry.getValue() /total;
+			double auxEntry = -(probabilityEntry*(Math.log(probabilityEntry)/Math.log(2)));
+			entropy = entropy + auxEntry;
+		}
+
+		return entropy/maxEntropy;
 	}
 
 	private class PortStatsCollector implements Runnable {
