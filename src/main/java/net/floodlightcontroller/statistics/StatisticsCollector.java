@@ -50,7 +50,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 
 	private static final Logger logFlowStatsCollector = LoggerFactory.getLogger(FlowStatsCollector.class);
-	private static final int flowStatsInterval = 30;
+	private static final int flowStatsInterval = 10;
 	private static ScheduledFuture<?> flowStatsCollector;
 
 
@@ -89,7 +89,8 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 	 *
 	 */
 
-
+	ArrayList<Double> registrySrcIPEntropy = new ArrayList<>();
+	ArrayList<Double> registryDstIPEntropy = new ArrayList<>();
 
 	public class FlowStatsCollector implements Runnable {
 
@@ -98,7 +99,6 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 			HashMap<Object, Long> srcIPTable = new HashMap<>();
 			HashMap<Object, Long> dstIPTable = new HashMap<>();
-			HashMap<Object, Long> inPortTable = new HashMap<>();
 
 			for (Entry<DatapathId, List<OFStatsReply>> e : replies.entrySet()) {
 
@@ -135,40 +135,58 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 				}
 			}
 
-			log.info("SRC IP TABLE:");
-			double srcIPTableEntropy = calculateEntropy(srcIPTable);
-			log.info("DST IP TABLE:");
-			double dstIPTableEntropy = calculateEntropy(dstIPTable);
+			//log.info("SRC IP TABLE:");
+			double srcIPTableEntropy = calculateEntropy(srcIPTable, "IPV4_SRC");
+			//log.info("DST IP TABLE:");
+			double dstIPTableEntropy = calculateEntropy(dstIPTable, "IPV4_DST");
 
 			log.info("ENTROPY SrcIPTable: "+srcIPTableEntropy+" DstIPTable: "+dstIPTableEntropy);
 		}
 	}
 
-	private double calculateEntropy(HashMap<Object, Long> table){
+	private double calculateEntropy(HashMap<Object, Long> table, String parameterType){
 		double maxEntropy = Math.log(table.size())/Math.log(2);
 		long total = 0;
 
-		for (Map.Entry<Object, Long> entry: table.entrySet()){
+		/*for (Map.Entry<Object, Long> entry: table.entrySet()){
 			long amount = entry.getValue();
 			log.info("\tTotal progress: "+amount+" Data: "+entry.getKey());
 			total += amount;
-		}
+		}*/
 
-		/*
 		for (long amount: table.values()){
-			log.info("Total progress: "+amount);
+			//log.info("Total progress: "+amount);
 			total += amount;
 		}
 
-		 */
-		log.info("\tTotal: "+total);
+		//log.info("\tTotal: "+total);
 		double entropy = 0;
 		for (Map.Entry<Object, Long> entry: table.entrySet()){
 			double probabilityEntry = (double) entry.getValue() /total;
 			double entropySummand = -(probabilityEntry*(Math.log(probabilityEntry)/Math.log(2)));
 			entropy = entropy + entropySummand;
-			log.info("\tData: "+entry.getKey()+" Prob: "+probabilityEntry+" Summand: "+entropySummand+" Accumulated: "+entropy);
+			//log.info("\tData: "+entry.getKey()+" Prob: "+probabilityEntry+" Summand: "+entropySummand+" Accumulated: "+entropy);
 		}
+
+		double normalizedEntropy = entropy/maxEntropy;
+
+		// funcion para detectar anomalia
+		/*switch (parameterType){
+			case "IPV4_SRC":
+				if (registrySrcIPEntropy.size() < 5){
+					registrySrcIPEntropy.add(normalizedEntropy);
+				}
+				else{
+					registrySrcIPEntropy.clear();
+				}
+				break;
+			case "IPV4_DST":
+				break;
+		}*/
+
+		// si detecta anomalia -> Identificar equipos implicados en el ataque
+		// para identificar equipos: buscar ip_src o ip_dst que mas se repite
+		// una vez identificados -> Insertar reglas para mitigar ataque
 
 		return entropy/maxEntropy;
 	}
