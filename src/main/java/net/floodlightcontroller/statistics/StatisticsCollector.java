@@ -148,6 +148,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		double maxEntropy = Math.log(table.size())/Math.log(2);
 		long total = 0;
 		for (long amount: table.values()){
+			log.info("Total progress: "+amount);
 			total += amount;
 		}
 		log.info("\tTotal: "+total);
@@ -156,7 +157,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			double probabilityEntry = (double) entry.getValue() /total;
 			double entropySummand = -(probabilityEntry*(Math.log(probabilityEntry)/Math.log(2)));
 			entropy = entropy + entropySummand;
-			log.info("\tProb: "+probabilityEntry+" Summand: "+entropySummand+" Accumulated: "+entropy);
+			log.info("\tData: "+entry.getKey()+"Prob: "+probabilityEntry+" Summand: "+entropySummand+" Accumulated: "+entropy);
 		}
 
 		return entropy/maxEntropy;
