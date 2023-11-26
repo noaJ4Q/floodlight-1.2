@@ -50,7 +50,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 
 	private static final Logger logFlowStatsCollector = LoggerFactory.getLogger(FlowStatsCollector.class);
-	private static final int flowStatsInterval = 10;
+	private static final int flowStatsInterval = 30;
 	private static ScheduledFuture<?> flowStatsCollector;
 
 
@@ -111,7 +111,9 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 						log.info("\t" + i + ")" +
 								" PacketsCount: " + fse.getPacketCount().getValue() +
 								" SrcIP: " + fse.getMatch().get(MatchField.IPV4_SRC) +
-								" DstIP: " + fse.getMatch().get(MatchField.IPV4_DST));
+								" DstIP: " + fse.getMatch().get(MatchField.IPV4_DST) +
+								" SrcPort: " + fse.getMatch().get(MatchField.TCP_SRC) +
+								" DstPort: " + fse.getMatch().get(MatchField.TCP_DST));
 						i++;
 
 						// CONSIDERANDO QUE EXISTEN FLOW PRECONFIGURADOS EN CADA SWITCH:
@@ -122,22 +124,23 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 						IPv4Address srcIP = match.get(MatchField.IPV4_DST);
 						IPv4Address dstIP = match.get(MatchField.IPV4_DST);
-						OFPort inPort = match.get(MatchField.IN_PORT);
 						//TransportPort srcPort = match.get(MatchField.TCP_DST);
 						//TransportPort dstPort = match.get(MatchField.TCP_DST);
 
-						srcIPTable.put(srcIP, srcIPTable.get(srcIP) == null ? 0 : srcIPTable.get(srcIP) + count);
-						dstIPTable.put(dstIP, dstIPTable.get(dstIP) == null ? 0 : dstIPTable.get(dstIP) + count);
-						inPortTable.put(inPort, inPortTable.get(inPort) == null ? 0 : inPortTable.get(inPort) + count);
+						if (srcIP != null && dstIP != null){
+							srcIPTable.put(srcIP, srcIPTable.get(srcIP) == null ? 0 : srcIPTable.get(srcIP) + count);
+							dstIPTable.put(dstIP, dstIPTable.get(dstIP) == null ? 0 : dstIPTable.get(dstIP) + count);
+						}
 					}
 				}
 			}
 
+			log.info("SRC IP TABLE:");
 			double srcIPTableEntropy = calculateEntropy(srcIPTable);
+			log.info("DST IP TABLE:");
 			double dstIPTableEntropy = calculateEntropy(dstIPTable);
-			double inPortTableEntropy = calculateEntropy(inPortTable);
 
-			log.info("ENTROPY SrcIPTable: "+Math.round(srcIPTableEntropy)+" DstIPTable: "+Math.round(dstIPTableEntropy)+" InPortTable: "+ Math.round(inPortTableEntropy));
+			log.info("ENTROPY SrcIPTable: "+Math.round(srcIPTableEntropy)+" DstIPTable: "+Math.round(dstIPTableEntropy));
 		}
 	}
 
@@ -147,11 +150,13 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		for (long amount: table.values()){
 			total += amount;
 		}
+		log.info("\tTotal: "+total);
 		double entropy = 0;
 		for (Map.Entry<Object, Long> entry: table.entrySet()){
 			double probabilityEntry = (double) entry.getValue() /total;
-			double auxEntry = -(probabilityEntry*(Math.log(probabilityEntry)/Math.log(2)));
-			entropy = entropy + auxEntry;
+			double entropySummand = -(probabilityEntry*(Math.log(probabilityEntry)/Math.log(2)));
+			entropy = entropy + entropySummand;
+			log.info("\tProb: "+probabilityEntry+" Summand: "+entropySummand+" Accumulated: "+entropy);
 		}
 
 		return entropy/maxEntropy;
