@@ -147,17 +147,27 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 	private double calculateEntropy(HashMap<Object, Long> table){
 		double maxEntropy = Math.log(table.size())/Math.log(2);
 		long total = 0;
+
+		for (Map.Entry<Object, Long> entry: table.entrySet()){
+			long amount = entry.getValue();
+			log.info("\tTotal progress: "+amount+" Data: "+entry.getKey());
+			total += amount;
+		}
+
+		/*
 		for (long amount: table.values()){
 			log.info("Total progress: "+amount);
 			total += amount;
 		}
+
+		 */
 		log.info("\tTotal: "+total);
 		double entropy = 0;
 		for (Map.Entry<Object, Long> entry: table.entrySet()){
 			double probabilityEntry = (double) entry.getValue() /total;
 			double entropySummand = -(probabilityEntry*(Math.log(probabilityEntry)/Math.log(2)));
 			entropy = entropy + entropySummand;
-			log.info("\tData: "+entry.getKey()+"Prob: "+probabilityEntry+" Summand: "+entropySummand+" Accumulated: "+entropy);
+			log.info("\tData: "+entry.getKey()+" Prob: "+probabilityEntry+" Summand: "+entropySummand+" Accumulated: "+entropy);
 		}
 
 		return entropy/maxEntropy;
