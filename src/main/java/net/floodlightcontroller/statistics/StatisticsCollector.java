@@ -140,7 +140,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			log.info("DST IP TABLE:");
 			double dstIPTableEntropy = calculateEntropy(dstIPTable);
 
-			log.info("ENTROPY SrcIPTable: "+Math.round(srcIPTableEntropy)+" DstIPTable: "+Math.round(dstIPTableEntropy));
+			log.info("ENTROPY SrcIPTable: "+srcIPTableEntropy+" DstIPTable: "+dstIPTableEntropy);
 		}
 	}
 
