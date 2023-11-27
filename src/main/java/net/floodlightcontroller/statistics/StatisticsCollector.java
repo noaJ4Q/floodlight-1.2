@@ -90,6 +90,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 	ArrayList<Double> registrySrcIPEntropy = new ArrayList<>();
 	ArrayList<Double> registryDstIPEntropy = new ArrayList<>();
+	boolean thresholdEnabled = false;
 
 	public class FlowStatsCollector implements Runnable {
 
@@ -107,12 +108,13 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 					int i = 0;
 
 					for (OFFlowStatsEntry fse : fsr.getEntries()) { // dentro de un flow
-						log.info("\t" + i + ")" +
+						
+						/*log.info("\t" + i + ")" +
 								" PacketsCount: " + fse.getPacketCount().getValue() +
 								" SrcIP: " + fse.getMatch().get(MatchField.IPV4_SRC) +
 								" DstIP: " + fse.getMatch().get(MatchField.IPV4_DST) +
 								" SrcPort: " + fse.getMatch().get(MatchField.TCP_SRC) +
-								" DstPort: " + fse.getMatch().get(MatchField.TCP_DST));
+								" DstPort: " + fse.getMatch().get(MatchField.TCP_DST));*/
 						i++;
 
 						// CONSIDERANDO QUE EXISTEN FLOW PRECONFIGURADOS EN CADA SWITCH:
@@ -141,22 +143,57 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 			log.info("ENTROPY SrcIPTable: "+srcIPEntropy+" DstIPTable: "+dstIPTEntropy);
 
-			if (anomalyDetected() && (!srcIPTable.isEmpty() || !dstIPTable.isEmpty())){
+			//IPv4Address srcIPAnomaly = anomalyDetected(registrySrcIPEntropy);
+			//IPv4Address dstIPAnomaly = anomalyDetected(registryDstIPEntropy);
 
-				log.info("SRC IP TABLE");
-				IPv4Address srcIPAnomaly = (IPv4Address) getMaxEntry(srcIPTable).getKey();
-				// solo dst IP para la detección de ataques DDoS
-				log.info("DST IP TABLE");
+			if (!thresholdEnabled && dstIPTEntropy > 0.8){
+				thresholdEnabled = true;
+				log.info("THRESHOLD ENABLED");
+			} else if (thresholdEnabled && dstIPTEntropy < 0.8 && !dstIPTable.isEmpty()) { // DDoS detectado
 				IPv4Address dstIPAnomaly = (IPv4Address) getMaxEntry(dstIPTable).getKey();
+				log.info("THRESHOLD VIOLATED");
 				mitigate_attack(dstIPAnomaly);
-
-				log.info("SRC IP Anomaly: "+srcIPAnomaly+" DST IP Anomaly: "+dstIPAnomaly);
-
 			}
+
+			//if (dstIPAnomaly != null  && !dstIPTable.isEmpty()){
+
+				//log.info("SRC IP TABLE");
+				//IPv4Address srcIPAnomaly = (IPv4Address) getMaxEntry(srcIPTable).getKey();
+				// solo dst IP para la detección de ataques DDoS
+				//log.info("DST IP TABLE");
+				//IPv4Address dstIPAnomaly = (IPv4Address) getMaxEntry(dstIPTable).getKey();
+				//mitigate_attack(dstIPAnomaly);
+
+				//log.info("SRC IP Anomaly: "+srcIPAnomaly+" DST IP Anomaly: "+dstIPAnomaly);
+
+			//}
 		}
 	}
 
 	private double calculateEntropy(HashMap<Object, Long> table, String parameterType){
+		double normalizedEntropy = getNormalizedEntropy(table);
+
+		// funcion para detectar anomalia
+		// con una tasa de un paquete por segundo en toda la red se obtiene una entropia de 0.98
+		switch (parameterType){
+			case "IPV4_SRC":
+				registrySrcIPEntropy.add(normalizedEntropy);
+				break;
+			case "IPV4_DST":
+				registryDstIPEntropy.add(normalizedEntropy);
+				break;
+		}
+
+		// si detecta anomalia -> Identificar equipos implicados en el ataque
+		// para identificar equipos: buscar ip_src o ip_dst que mas se repite
+		// una vez identificados -> Insertar reglas para mitigar ataque
+		// cuando se mitiga el ataque se deben resetear las reglas (volver a crearlas)
+		// cada vez que se obtienen las estadísticas, también se debe reiniciar el contador de paquetes
+
+		return normalizedEntropy;
+	}
+
+	private static double getNormalizedEntropy(HashMap<Object, Long> table) {
 		double maxEntropy = Math.log(table.size())/Math.log(2);
 		long total = 0;
 
@@ -166,51 +203,29 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		}
 
 		double entropy = 0;
-		for (Map.Entry<Object, Long> entry: table.entrySet()){
+		for (Entry<Object, Long> entry: table.entrySet()){
 			double probabilityEntry = (double) entry.getValue() /total;
 			double entropySummand = -(probabilityEntry*(Math.log(probabilityEntry)/Math.log(2)));
 			entropy = entropy + entropySummand;
 			//log.info("\tData: "+entry.getKey()+" Prob: "+probabilityEntry+" Summand: "+entropySummand+" Accumulated: "+entropy);
 		}
 
-		double normalizedEntropy = entropy/maxEntropy;
-
-		// funcion para detectar anomalia
-		// con una tasa de un paquete por segundo en toda la red se obtiene una entropia de 0.98
-		/*switch (parameterType){
-			case "IPV4_SRC":
-				if (registrySrcIPEntropy.size() < 5){
-					registrySrcIPEntropy.add(normalizedEntropy);
-				}
-				else{
-					registrySrcIPEntropy.clear();
-				}
-				break;
-			case "IPV4_DST":
-				break;
-		}*/
-
-		// si detecta anomalia -> Identificar equipos implicados en el ataque
-		// para identificar equipos: buscar ip_src o ip_dst que mas se repite
-		// una vez identificados -> Insertar reglas para mitigar ataque
-		// cuando se mitiga el ataque se deben resetear las reglas (volver a crearlas)
-		// cada vez que se obtienen las estadísticas, también se debe reiniciar el contador de paquetes
-
-		return entropy/maxEntropy;
+        return entropy/maxEntropy;
 	}
 
-	private boolean anomalyDetected(){
-		Random random = new Random();
-		return true;
+	private IPv4Address anomalyDetected(ArrayList<Double> registryEntropy){
+        return null;
 	}
 
 	private void mitigate_attack(IPv4Address dstIP){
+		log.info("MITIGATING...");
 		String controllerMitigateURL = "http://localhost:8001";
+		String switchDPID = "00:00:f2:20:f9:45:4c:4e";
 
-		try {
+		/*try {
 			OkHttpClient client = new OkHttpClient();
 			Request request = new Request.Builder()
-					.url(controllerMitigateURL + "/insertrule/switchdpid/"+dstIP)
+					.url(controllerMitigateURL + "/insertrule/"+switchDPID+"/"+dstIP)
 					.build();
 
 			Call call = client.newCall(request);
@@ -218,6 +233,8 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		}catch (IOException e){
 			log.info(e.getMessage());
 		}
+
+		 */
 
 	}
 
