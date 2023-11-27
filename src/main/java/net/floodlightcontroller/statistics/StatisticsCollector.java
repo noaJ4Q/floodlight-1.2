@@ -3,7 +3,6 @@ package net.floodlightcontroller.statistics;
 import java.io.IOException;
 import java.lang.Thread.State;
 import java.net.URL;
-import java.net.http.HttpClient;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
