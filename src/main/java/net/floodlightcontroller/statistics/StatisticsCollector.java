@@ -130,13 +130,13 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			}
 
 			//log.info("SRC IP TABLE:");
-			double srcIPTableEntropy = calculateEntropy(srcIPTable, "IPV4_SRC");
+			double srcIPEntropy = calculateEntropy(srcIPTable, "IPV4_SRC");
 			//log.info("DST IP TABLE:");
-			double dstIPTableEntropy = calculateEntropy(dstIPTable, "IPV4_DST");
+			double dstIPTEntropy = calculateEntropy(dstIPTable, "IPV4_DST");
 
-			log.info("ENTROPY SrcIPTable: "+srcIPTableEntropy+" DstIPTable: "+dstIPTableEntropy);
+			log.info("ENTROPY SrcIPTable: "+srcIPEntropy+" DstIPTable: "+dstIPTEntropy);
 
-			if (anomalyDetected()){
+			if (anomalyDetected() && (!srcIPTable.isEmpty() || !dstIPTable.isEmpty())){
 
 				IPv4Address srcIPAnomaly = (IPv4Address) getMaxEntry(srcIPTable).getKey();
 				IPv4Address dstIPAnomaly = (IPv4Address) getMaxEntry(dstIPTable).getKey();
