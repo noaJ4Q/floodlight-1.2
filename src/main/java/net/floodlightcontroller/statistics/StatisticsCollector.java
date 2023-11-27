@@ -1,11 +1,18 @@
 package net.floodlightcontroller.statistics;
 
+import java.io.IOException;
 import java.lang.Thread.State;
+import java.net.URL;
+import java.net.http.HttpClient;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.projectfloodlight.openflow.protocol.*;
 import org.projectfloodlight.openflow.protocol.action.OFAction;
 import org.projectfloodlight.openflow.protocol.match.Match;
@@ -42,8 +49,6 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 	private static int portStatsInterval = 10; /* could be set by REST API, so not final */
 	private static ScheduledFuture<?> portStatsCollector;
 
-
-	private static final Logger logFlowStatsCollector = LoggerFactory.getLogger(FlowStatsCollector.class);
 	private static final int flowStatsInterval = 10;
 	private static ScheduledFuture<?> flowStatsCollector;
 
@@ -200,6 +205,19 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 	}
 
 	private void mitigate_attack(IPv4Address dstIP){
+		String controllerMitigateURL = "http://localhost:8001";
+
+		try {
+			OkHttpClient client = new OkHttpClient();
+			Request request = new Request.Builder()
+					.url(controllerMitigateURL + "/insertrule/switchdpid/"+dstIP)
+					.build();
+
+			Call call = client.newCall(request);
+			Response response = call.execute();
+		}catch (IOException e){
+			log.info(e.getMessage());
+		}
 
 	}
 
