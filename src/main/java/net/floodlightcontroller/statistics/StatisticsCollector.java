@@ -138,7 +138,9 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 			if (anomalyDetected() && (!srcIPTable.isEmpty() || !dstIPTable.isEmpty())){
 
+				log.info("SRC IP TABLE");
 				IPv4Address srcIPAnomaly = (IPv4Address) getMaxEntry(srcIPTable).getKey();
+				log.info("DST IP TABLE");
 				IPv4Address dstIPAnomaly = (IPv4Address) getMaxEntry(dstIPTable).getKey();
 
 				log.info("SRC IP Anomaly: "+srcIPAnomaly+" DST IP Anomaly: "+dstIPAnomaly);
@@ -191,6 +193,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		// si detecta anomalia -> Identificar equipos implicados en el ataque
 		// para identificar equipos: buscar ip_src o ip_dst que mas se repite
 		// una vez identificados -> Insertar reglas para mitigar ataque
+		// cuando se mitiga el ataque se deben resetear las reglas (volver a crearlas)
 
 		return entropy/maxEntropy;
 	}
@@ -204,6 +207,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		Map.Entry<K, V> maxEntry = null;
 
 		for (Map.Entry<K, V> entry : map.entrySet()) {
+			log.info("\tIP: "+entry.getKey()+" Count: "+entry.getValue());
 			if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
 				maxEntry = entry;
 			}
