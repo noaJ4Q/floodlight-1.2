@@ -144,7 +144,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			if (!thresholdEnabled && dstIPTEntropy > 0.8){
 				thresholdEnabled = true;
 				log.info("THRESHOLD ENABLED");
-			} else if (thresholdEnabled && dstIPTEntropy < 0.8 && !dstIPTable.isEmpty()) { // DDoS detectado
+			} else if (thresholdEnabled && dstIPTEntropy < 0.85 && !dstIPTable.isEmpty()) { // DDoS detectado
 				IPv4Address dstIPAnomaly = (IPv4Address) getMaxEntry(dstIPTable).getKey();
 				log.info("THRESHOLD VIOLATED");
 				mitigate_attack(dstIPAnomaly);
