@@ -140,8 +140,10 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 				log.info("SRC IP TABLE");
 				IPv4Address srcIPAnomaly = (IPv4Address) getMaxEntry(srcIPTable).getKey();
+				// solo dst IP para la detección de ataques DDoS
 				log.info("DST IP TABLE");
 				IPv4Address dstIPAnomaly = (IPv4Address) getMaxEntry(dstIPTable).getKey();
+				mitigate_attack(dstIPAnomaly);
 
 				log.info("SRC IP Anomaly: "+srcIPAnomaly+" DST IP Anomaly: "+dstIPAnomaly);
 
@@ -153,18 +155,11 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		double maxEntropy = Math.log(table.size())/Math.log(2);
 		long total = 0;
 
-		/*for (Map.Entry<Object, Long> entry: table.entrySet()){
-			long amount = entry.getValue();
-			log.info("\tTotal progress: "+amount+" Data: "+entry.getKey());
-			total += amount;
-		}*/
-
 		for (long amount: table.values()){
 			//log.info("Total progress: "+amount);
 			total += amount;
 		}
 
-		//log.info("\tTotal: "+total);
 		double entropy = 0;
 		for (Map.Entry<Object, Long> entry: table.entrySet()){
 			double probabilityEntry = (double) entry.getValue() /total;
@@ -194,6 +189,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		// para identificar equipos: buscar ip_src o ip_dst que mas se repite
 		// una vez identificados -> Insertar reglas para mitigar ataque
 		// cuando se mitiga el ataque se deben resetear las reglas (volver a crearlas)
+		// cada vez que se obtienen las estadísticas, también se debe reiniciar el contador de paquetes
 
 		return entropy/maxEntropy;
 	}
@@ -201,6 +197,10 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 	private boolean anomalyDetected(){
 		Random random = new Random();
 		return true;
+	}
+
+	private void mitigate_attack(IPv4Address dstIP){
+
 	}
 
 	private <K, V extends Comparable<V>> Map.Entry<K, V> getMaxEntry(Map<K, V> map){
