@@ -2,6 +2,7 @@ package net.floodlightcontroller.statistics;
 
 import java.io.IOException;
 import java.lang.Thread.State;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
@@ -99,7 +100,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 				for (OFStatsReply r : e.getValue()) { // dentro de un switch
 					OFFlowStatsReply fsr = (OFFlowStatsReply) r;
-					log.info("Flow entries switch: " + e.getKey());
+					//log.info("Flow entries switch: " + e.getKey());
 					int i = 0;
 
 					for (OFFlowStatsEntry fse : fsr.getEntries()) { // dentro de un flow
@@ -149,19 +150,6 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 				log.info("THRESHOLD VIOLATED");
 				mitigate_attack(dstIPAnomaly);
 			}
-
-			//if (dstIPAnomaly != null  && !dstIPTable.isEmpty()){
-
-				//log.info("SRC IP TABLE");
-				//IPv4Address srcIPAnomaly = (IPv4Address) getMaxEntry(srcIPTable).getKey();
-				// solo dst IP para la detección de ataques DDoS
-				//log.info("DST IP TABLE");
-				//IPv4Address dstIPAnomaly = (IPv4Address) getMaxEntry(dstIPTable).getKey();
-				//mitigate_attack(dstIPAnomaly);
-
-				//log.info("SRC IP Anomaly: "+srcIPAnomaly+" DST IP Anomaly: "+dstIPAnomaly);
-
-			//}
 		}
 	}
 
@@ -217,19 +205,20 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		String controllerMitigateURL = "http://localhost:8001";
 		String switchDPID = "00:00:f2:20:f9:45:4c:4e";
 
-		/*try {
-			OkHttpClient client = new OkHttpClient();
-			Request request = new Request.Builder()
-					.url(controllerMitigateURL + "/insertrule/"+switchDPID+"/"+dstIP)
-					.build();
+		try {
+			URL obj = new URL(controllerMitigateURL);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-			Call call = client.newCall(request);
-			Response response = call.execute();
-		}catch (IOException e){
+			con.setRequestMethod("GET");
+			int responseCode = con.getResponseCode();
+			if (responseCode == HttpURLConnection.HTTP_OK) {
+				log.info("REQUEST SENDED...");
+			} else {
+				System.out.println("La solicitud GET no fue exitosa.");
+			}
+		} catch (IOException e) {
 			log.info(e.getMessage());
 		}
-
-		 */
 
 	}
 
