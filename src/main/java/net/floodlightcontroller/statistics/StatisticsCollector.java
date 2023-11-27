@@ -116,7 +116,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 						long count = fse.getPacketCount().getValue();
 						Match match = fse.getMatch();
 
-						IPv4Address srcIP = match.get(MatchField.IPV4_DST);
+						IPv4Address srcIP = match.get(MatchField.IPV4_SRC);
 						IPv4Address dstIP = match.get(MatchField.IPV4_DST);
 						//TransportPort srcPort = match.get(MatchField.TCP_DST);
 						//TransportPort dstPort = match.get(MatchField.TCP_DST);
