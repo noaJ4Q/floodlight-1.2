@@ -1,14 +1,8 @@
 package net.floodlightcontroller.statistics;
 
 import java.lang.Thread.State;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -141,6 +135,15 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			double dstIPTableEntropy = calculateEntropy(dstIPTable, "IPV4_DST");
 
 			log.info("ENTROPY SrcIPTable: "+srcIPTableEntropy+" DstIPTable: "+dstIPTableEntropy);
+
+			if (anomalyDetected()){
+
+				IPv4Address srcIPAnomaly = (IPv4Address) getMaxEntry(srcIPTable).getKey();
+				IPv4Address dstIPAnomaly = (IPv4Address) getMaxEntry(dstIPTable).getKey();
+
+				log.info("SRC IP Anomaly: "+srcIPAnomaly+" DST IP Anomaly: "+dstIPAnomaly);
+
+			}
 		}
 	}
 
@@ -171,6 +174,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		double normalizedEntropy = entropy/maxEntropy;
 
 		// funcion para detectar anomalia
+		// con una tasa de un paquete por segundo en toda la red se obtiene una entropia de 0.98
 		/*switch (parameterType){
 			case "IPV4_SRC":
 				if (registrySrcIPEntropy.size() < 5){
@@ -189,6 +193,23 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		// una vez identificados -> Insertar reglas para mitigar ataque
 
 		return entropy/maxEntropy;
+	}
+
+	private boolean anomalyDetected(){
+		Random random = new Random();
+		return random.nextBoolean();
+	}
+
+	private <K, V extends Comparable<V>> Map.Entry<K, V> getMaxEntry(Map<K, V> map){
+		Map.Entry<K, V> maxEntry = null;
+
+		for (Map.Entry<K, V> entry : map.entrySet()) {
+			if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
+				maxEntry = entry;
+			}
+		}
+
+		return maxEntry;
 	}
 
 	private class PortStatsCollector implements Runnable {
