@@ -197,7 +197,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 	private boolean anomalyDetected(){
 		Random random = new Random();
-		return random.nextBoolean();
+		return true;
 	}
 
 	private <K, V extends Comparable<V>> Map.Entry<K, V> getMaxEntry(Map<K, V> map){
