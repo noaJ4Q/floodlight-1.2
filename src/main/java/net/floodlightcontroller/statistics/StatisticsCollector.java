@@ -205,6 +205,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		String controllerMitigateURL = "http://localhost:8001";
 		String switchDPID = "00:00:f2:20:f9:45:4c:4e";
 
+		/*
 		try {
 			URL obj = new URL(controllerMitigateURL);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -219,6 +220,8 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		} catch (IOException e) {
 			log.info(e.getMessage());
 		}
+
+		 */
 
 	}
 
