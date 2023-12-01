@@ -219,7 +219,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 	}
 
 	private void mitigate_attack(IPv4Address dstIP){
-		log.info("MITIGATING...");
+		log.info("MITIGATING...({})",dstIP);
 		String controllerMitigateURL = "http://localhost:8001";
 		String switchDPID = "00:00:f2:20:f9:45:4c:4e";
 
