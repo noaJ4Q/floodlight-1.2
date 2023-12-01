@@ -127,23 +127,21 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 						if (srcIP != null && dstIP != null){
 							srcIPTable.put(srcIP, srcIPTable.get(srcIP) == null ? 0 : srcIPTable.get(srcIP) + count);
 							log.info("Adding "+srcIP+" (srcIP) to srcTable");
+							// srcTable
+							log.info("SRC TABLE ENTRIES:");
+							for (Entry<Object, Long> entry: srcIPTable.entrySet()){
+								log.info(entry.getKey()+": "+entry.getValue());
+							}
 							dstIPTable.put(dstIP, dstIPTable.get(dstIP) == null ? 0 : dstIPTable.get(dstIP) + count);
 							log.info("Adding "+dstIP+" (dstIP) to dstTable");
+							log.info("DST TABLE ENTRIES:");
+							// dstTable
+							for (Entry<Object, Long> entry: dstIPTable.entrySet()){
+								log.info(entry.getKey()+": "+entry.getValue());
+							}
 						}
 					}
 				}
-			}
-
-			// srcTable
-			log.info("SRC TABLE ENTRIES:");
-			for (Entry<Object, Long> entry: srcIPTable.entrySet()){
-				log.info(entry.getKey()+": "+entry.getValue());
-			}
-
-			log.info("DST TABLE ENTRIES:");
-			// dstTable
-			for (Entry<Object, Long> entry: dstIPTable.entrySet()){
-				log.info(entry.getKey()+": "+entry.getValue());
 			}
 
 			//log.info("SRC IP TABLE:");
