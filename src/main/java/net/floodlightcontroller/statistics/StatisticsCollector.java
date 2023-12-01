@@ -100,11 +100,11 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 				for (OFStatsReply r : e.getValue()) { // dentro de un switch
 					OFFlowStatsReply fsr = (OFFlowStatsReply) r;
-					log.info("Flow entries switch: " + e.getKey());
+					//log.info("Flow entries switch: " + e.getKey());
 					int i = 0;
 
 					for (OFFlowStatsEntry fse : fsr.getEntries()) { // dentro de un flow
-						
+						/*
 						log.info("\t" + i + ")" +
 								" PacketsCount: " + fse.getPacketCount().getValue() +
 								" SrcIP: " + fse.getMatch().get(MatchField.IPV4_SRC) +
@@ -112,7 +112,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 								" SrcPort: " + fse.getMatch().get(MatchField.TCP_SRC) +
 								" DstPort: " + fse.getMatch().get(MatchField.TCP_DST));
 						i++;
-
+						*/
 						// CONSIDERANDO QUE EXISTEN FLOW PRECONFIGURADOS EN CADA SWITCH:
 
 						// store statistics
@@ -125,22 +125,26 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 						//TransportPort dstPort = match.get(MatchField.TCP_DST);
 
 						if (srcIP != null && dstIP != null){
-							log.info("CHECKING SRC IP: "+srcIPTable.get(srcIP));
+							//log.info("CHECKING SRC IP: "+srcIPTable.get(srcIP));
 							srcIPTable.put(srcIP, srcIPTable.get(srcIP) == null ? count : srcIPTable.get(srcIP) + count);
-							log.info("Adding "+srcIP+" (srcIP) to srcTable");
+							//log.info("Adding "+srcIP+" (srcIP) to srcTable");
 							// srcTable
-							log.info("SRC TABLE ENTRIES:");
+							//log.info("SRC TABLE ENTRIES:");
+							/*
 							for (Entry<Object, Long> entry: srcIPTable.entrySet()){
 								log.info(entry.getKey()+": "+entry.getValue());
 							}
-							log.info("CHECKING DST IP: "+dstIPTable.get(dstIP));
+							*/
+							//log.info("CHECKING DST IP: "+dstIPTable.get(dstIP));
 							dstIPTable.put(dstIP, dstIPTable.get(dstIP) == null ? count : dstIPTable.get(dstIP) + count);
-							log.info("Adding "+dstIP+" (dstIP) to dstTable");
-							log.info("DST TABLE ENTRIES:");
+							//log.info("Adding "+dstIP+" (dstIP) to dstTable");
+							//log.info("DST TABLE ENTRIES:");
 							// dstTable
+							/*
 							for (Entry<Object, Long> entry: dstIPTable.entrySet()){
 								log.info(entry.getKey()+": "+entry.getValue());
 							}
+							*/
 						}
 					}
 				}
