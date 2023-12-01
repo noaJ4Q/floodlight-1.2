@@ -100,17 +100,17 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 				for (OFStatsReply r : e.getValue()) { // dentro de un switch
 					OFFlowStatsReply fsr = (OFFlowStatsReply) r;
-					//log.info("Flow entries switch: " + e.getKey());
+					log.info("Flow entries switch: " + e.getKey());
 					int i = 0;
 
 					for (OFFlowStatsEntry fse : fsr.getEntries()) { // dentro de un flow
 						
-						/*log.info("\t" + i + ")" +
+						log.info("\t" + i + ")" +
 								" PacketsCount: " + fse.getPacketCount().getValue() +
 								" SrcIP: " + fse.getMatch().get(MatchField.IPV4_SRC) +
 								" DstIP: " + fse.getMatch().get(MatchField.IPV4_DST) +
 								" SrcPort: " + fse.getMatch().get(MatchField.TCP_SRC) +
-								" DstPort: " + fse.getMatch().get(MatchField.TCP_DST));*/
+								" DstPort: " + fse.getMatch().get(MatchField.TCP_DST));
 						i++;
 
 						// CONSIDERANDO QUE EXISTEN FLOW PRECONFIGURADOS EN CADA SWITCH:
@@ -181,7 +181,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		long total = 0;
 
 		for (long amount: table.values()){
-			//log.info("Total progress: "+amount);
+			log.info("Total progress: "+amount);
 			total += amount;
 		}
 
@@ -190,7 +190,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			double probabilityEntry = (double) entry.getValue() /total;
 			double entropySummand = -(probabilityEntry*(Math.log(probabilityEntry)/Math.log(2)));
 			entropy = entropy + entropySummand;
-			//log.info("\tData: "+entry.getKey()+" Prob: "+probabilityEntry+" Summand: "+entropySummand+" Accumulated: "+entropy);
+			log.info("\tData: "+entry.getKey()+" Prob: "+probabilityEntry+" Summand: "+entropySummand+" Accumulated: "+entropy);
 		}
 
         return entropy/maxEntropy;
