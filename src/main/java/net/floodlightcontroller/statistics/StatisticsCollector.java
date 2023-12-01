@@ -223,7 +223,6 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		String controllerMitigateURL = "http://localhost:8001";
 		String switchDPID = "00:00:f2:20:f9:45:4c:4e"; // SW3 POR DEFECTO
 
-
 		try {
 			URL obj = new URL(controllerMitigateURL+"/insertrule/"+switchDPID+"/"+dstIP);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
