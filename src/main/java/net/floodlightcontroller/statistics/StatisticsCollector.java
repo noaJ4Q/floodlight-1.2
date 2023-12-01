@@ -126,7 +126,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 						if (srcIP != null && dstIP != null){
 							log.info("CHECKING SRC IP: "+srcIPTable.get(srcIP));
-							srcIPTable.put(srcIP, srcIPTable.get(srcIP) == null ? 0 : srcIPTable.get(srcIP) + count);
+							srcIPTable.put(srcIP, srcIPTable.get(srcIP) == null ? count : srcIPTable.get(srcIP) + count);
 							log.info("Adding "+srcIP+" (srcIP) to srcTable");
 							// srcTable
 							log.info("SRC TABLE ENTRIES:");
@@ -134,7 +134,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 								log.info(entry.getKey()+": "+entry.getValue());
 							}
 							log.info("CHECKING DST IP: "+dstIPTable.get(dstIP));
-							dstIPTable.put(dstIP, dstIPTable.get(dstIP) == null ? 0 : dstIPTable.get(dstIP) + count);
+							dstIPTable.put(dstIP, dstIPTable.get(dstIP) == null ? count : dstIPTable.get(dstIP) + count);
 							log.info("Adding "+dstIP+" (dstIP) to dstTable");
 							log.info("DST TABLE ENTRIES:");
 							// dstTable
