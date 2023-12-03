@@ -231,6 +231,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			int responseCode = con.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK) {
 				log.info("REQUEST SENDED...");
+				thresholdEnabled = false;
 			} else {
 				System.out.println("La solicitud GET no fue exitosa.");
 			}
