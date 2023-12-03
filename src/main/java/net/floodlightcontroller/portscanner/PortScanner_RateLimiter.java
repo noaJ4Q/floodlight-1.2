@@ -67,7 +67,7 @@ public class PortScanner_RateLimiter extends ForwardingBase implements IOFMessag
 
     protected  void createMatchFromPacket(IOFSwitch sw, OFPort inPort, FloodlightContext cntx) {
 
-        HashMap<String,Integer> temp=new HashMap<String, Integer>();
+        HashMap<String,Integer> temp;
         try{
             fh = new FileHandler("/home/floodlight/PortScan.html",true);
             logger.addHandler(fh);
@@ -83,7 +83,7 @@ public class PortScanner_RateLimiter extends ForwardingBase implements IOFMessag
                 if (FLOWMOD_DEFAULT_MATCH_TRANSPORT) {
                     if (ip.getProtocol().equals(IpProtocol.TCP)) {
                         TCP tcp = (TCP) ip.getPayload();
-                        int flags=tcp.getFlags();
+                        int flags = tcp.getFlags();
                         System.out.println("From Port Scanner "+srcIp + "to Destn IPaddress:" + dstIp + " flags " + flags  );
                         try
                         {
@@ -92,7 +92,7 @@ public class PortScanner_RateLimiter extends ForwardingBase implements IOFMessag
                                 logger.info("flags == 20");
                                 if(vertiscan.containsKey(srcIp.toString()))
                                 {
-                                    temp=vertiscan.get(srcIp.toString());
+                                    temp = vertiscan.get(srcIp.toString());
                                     if(temp.containsKey(dstIp.toString()))
                                     {
                                         //logger.info(threshold.toString());
@@ -123,7 +123,7 @@ public class PortScanner_RateLimiter extends ForwardingBase implements IOFMessag
                                                 log.info(e.getMessage());
                                             }
 
-                                            logger.info("Firewall rule added to block the attacker "+dstIp );
+                                            logger.info("Flow rule added to block the attacker "+dstIp );
                                         }
                                     }
                                     else
@@ -135,12 +135,13 @@ public class PortScanner_RateLimiter extends ForwardingBase implements IOFMessag
                                 else
                                 {
                                     //logger.info("srcIP not in map");
-                                    HashMap<String,Integer> attacker=new HashMap<String, Integer>();
+                                    HashMap<String,Integer> attacker = new HashMap<>();
                                     attacker.put(dstIp.toString(), 1);
                                     vertiscan.put(srcIp.toString(), attacker);
                                     //logger.info("added");
                                     System.out.println(vertiscan.size());
                                 }
+
                                 String srcPort = tcp.getSourcePort().toString();
                                 if(horizscan.containsKey(srcPort)){
                                     temp=horizscan.get(srcPort.toString());
