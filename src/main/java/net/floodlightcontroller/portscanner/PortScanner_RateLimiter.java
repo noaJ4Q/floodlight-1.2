@@ -3,6 +3,8 @@ package net.floodlightcontroller.portscanner;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -102,9 +104,25 @@ public class PortScanner_RateLimiter extends ForwardingBase implements IOFMessag
                                         //logger.info(threshold.get(dstIp.toString()).toString());
                                         if(count > threshold)
                                         {
+                                            String controllerMitigateURL = "http://localhost:8001";
+                                            String switchDPID = "00:00:f2:20:f9:45:4c:4e"; // SW3 POR DEFECTO
                                             logger.info("VERTICAL SCAN DETECTED!!!: Attacker is " + dstIp + " Victim is  " + srcIp);
-                                            String command = "curl -X POST -d {\"src-ip\":\"" + dstIp + "\",\"action\":\"DENY\"} http://localhost:8080/wm/firewall/rules/json";
-                                            Process p = Runtime.getRuntime().exec(command);
+
+                                            try {
+                                                URL obj = new URL(controllerMitigateURL+"/port_scanning/"+switchDPID+"/"+dstIp);
+                                                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+                                                con.setRequestMethod("GET");
+                                                int responseCode = con.getResponseCode();
+                                                if (responseCode == HttpURLConnection.HTTP_OK) {
+                                                    log.info("REQUEST SENDED...");
+                                                } else {
+                                                    System.out.println("La solicitud GET no fue exitosa.");
+                                                }
+                                            } catch (IOException e) {
+                                                log.info(e.getMessage());
+                                            }
+
                                             logger.info("Firewall rule added to block the attacker "+dstIp );
                                         }
                                     }
