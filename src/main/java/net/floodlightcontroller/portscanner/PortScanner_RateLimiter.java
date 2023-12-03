@@ -262,6 +262,7 @@ public class PortScanner_RateLimiter extends ForwardingBase implements IOFMessag
     public void startUp(FloodlightModuleContext context) {
         floodlightProvider.addOFMessageListener(OFType.PACKET_IN, this);
 
+        /*
         try {
             // Assume default encoding.
             fileWriter =
@@ -290,6 +291,8 @@ public class PortScanner_RateLimiter extends ForwardingBase implements IOFMessag
             // Or we could just do this:
             // ex.printStackTrace();
         }
+
+         */
     }
 
 
