@@ -155,7 +155,8 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			//log.info("DST IP TABLE:");
 			double dstIPTEntropy = calculateEntropy(dstIPTable, "IPV4_DST");
 
-			log.info("ENTROPY SrcIPTable: "+srcIPEntropy+" DstIPTable: "+dstIPTEntropy);
+			//log.info("ENTROPY SrcIPTable: "+srcIPEntropy+" DstIPTable: "+dstIPTEntropy);
+			log.info("ENTRPY DST_IP: "+dstIPTEntropy);
 
 			//IPv4Address srcIPAnomaly = anomalyDetected(registrySrcIPEntropy);
 			//IPv4Address dstIPAnomaly = anomalyDetected(registryDstIPEntropy);
