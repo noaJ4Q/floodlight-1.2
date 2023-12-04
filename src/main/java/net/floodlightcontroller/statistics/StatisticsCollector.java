@@ -176,7 +176,6 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			}
 			else {
 				log.info("ENTROPY DST_IP: no data");
-				log.info(Marker.ANY_MARKER, "xs");
 			}
 
 		}
