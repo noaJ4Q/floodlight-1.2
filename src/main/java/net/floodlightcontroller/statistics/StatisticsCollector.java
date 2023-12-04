@@ -173,6 +173,9 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 					mitigate_attack(dstIPAnomaly);
 				}
 			}
+			else {
+				log.info("ENTRPY DST_IP: no data");
+			}
 
 		}
 	}
