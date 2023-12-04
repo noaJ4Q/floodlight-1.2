@@ -31,6 +31,7 @@ import net.floodlightcontroller.restserver.IRestApiService;
 import net.floodlightcontroller.statistics.web.SwitchStatisticsWebRoutable;
 import net.floodlightcontroller.threadpool.IThreadPoolService;
 import net.floodlightcontroller.topology.NodePortTuple;
+import org.slf4j.Marker;
 
 public class StatisticsCollector implements IFloodlightModule, IStatisticsService {
 
@@ -174,7 +175,8 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 				}
 			}
 			else {
-				log.info("ENTRPY DST_IP: no data");
+				log.info("ENTROPY DST_IP: no data");
+				log.info(Marker.ANY_MARKER, "xs");
 			}
 
 		}
