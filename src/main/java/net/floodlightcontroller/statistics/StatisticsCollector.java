@@ -100,12 +100,12 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			for (Entry<DatapathId, List<OFStatsReply>> e : replies.entrySet()) {
 				for (OFStatsReply r : e.getValue()) {
 					OFFlowStatsReply fsr = (OFFlowStatsReply) r;
-					log.info("Flow entries switch: "+e.getKey());
+					//log.info("Flow entries switch: "+e.getKey());
 					int i = 0;
 					for (OFFlowStatsEntry fse : fsr.getEntries()) {
-						log.info("\t"+i+")"+
-								" PacketsCount: "+fse.getPacketCount().getValue()+
-								" BytesCount: "+fse.getByteCount().getValue());
+						//log.info("\t"+i+")"+
+								//" PacketsCount: "+fse.getPacketCount().getValue()+
+								//" BytesCount: "+fse.getByteCount().getValue());
 
 						i++;
 
