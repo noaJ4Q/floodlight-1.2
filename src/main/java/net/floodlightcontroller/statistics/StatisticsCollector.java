@@ -153,23 +153,27 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 			//log.info("SRC IP TABLE:");
 			double srcIPEntropy = calculateEntropy(srcIPTable, "IPV4_SRC");
+
 			//log.info("DST IP TABLE:");
-			double dstIPTEntropy = calculateEntropy(dstIPTable, "IPV4_DST");
+			if (!dstIPTable.isEmpty()){
+				double dstIPTEntropy = calculateEntropy(dstIPTable, "IPV4_DST");
 
-			//log.info("ENTROPY SrcIPTable: "+srcIPEntropy+" DstIPTable: "+dstIPTEntropy);
-			log.info("ENTRPY DST_IP: "+dstIPTEntropy);
+				//log.info("ENTROPY SrcIPTable: "+srcIPEntropy+" DstIPTable: "+dstIPTEntropy);
+				log.info("ENTRPY DST_IP: "+dstIPTEntropy);
 
-			//IPv4Address srcIPAnomaly = anomalyDetected(registrySrcIPEntropy);
-			//IPv4Address dstIPAnomaly = anomalyDetected(registryDstIPEntropy);
+				//IPv4Address srcIPAnomaly = anomalyDetected(registrySrcIPEntropy);
+				//IPv4Address dstIPAnomaly = anomalyDetected(registryDstIPEntropy);
 
-			if (!thresholdEnabled && dstIPTEntropy > entropyThreshold){
-				thresholdEnabled = true;
-				log.info("THRESHOLD ({}) ENABLED", entropyThreshold);
-			} else if (thresholdEnabled && dstIPTEntropy < entropyThreshold && !dstIPTable.isEmpty()) { // DDoS detectado
-				IPv4Address dstIPAnomaly = (IPv4Address) getMaxEntry(dstIPTable).getKey();
-				log.info("THRESHOLD ({}) VIOLATED: DDoS DETECTED TO {}", entropyThreshold, dstIPAnomaly);
-				mitigate_attack(dstIPAnomaly);
+				if (!thresholdEnabled && dstIPTEntropy > entropyThreshold){
+					thresholdEnabled = true;
+					log.info("THRESHOLD ({}) ENABLED", entropyThreshold);
+				} else if (thresholdEnabled && dstIPTEntropy < entropyThreshold && !dstIPTable.isEmpty()) { // DDoS detectado
+					IPv4Address dstIPAnomaly = (IPv4Address) getMaxEntry(dstIPTable).getKey();
+					log.info("THRESHOLD ({}) VIOLATED: DDoS DETECTED TO {}", entropyThreshold, dstIPAnomaly);
+					mitigate_attack(dstIPAnomaly);
+				}
 			}
+
 		}
 	}
 
