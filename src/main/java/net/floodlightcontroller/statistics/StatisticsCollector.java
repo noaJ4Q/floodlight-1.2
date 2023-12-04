@@ -237,7 +237,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		thresholdEnabled = false;
 		log.info("ATTACK MITIGATED");
 
-		/*
+
 		try {
 			URL obj = new URL(controllerMitigateURL+"/insertrule/"+switchDPID+"/"+dstIP);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -257,7 +257,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			log.info(e.getMessage());
 		}
 
-		 */
+
 
 	}
 
