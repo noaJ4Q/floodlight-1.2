@@ -108,6 +108,7 @@ public class PortScanner_RateLimiter extends ForwardingBase implements IOFMessag
                                             String switchDPID = "00:00:f2:20:f9:45:4c:4e"; // SW3 POR DEFECTO
                                             logger.info("THRESHOLD VIOLATED (5): PORT SCANNING DETECTED: Attacker is " + dstIp + " Victim is  " + srcIp);
 
+                                            /*
                                             try {
                                                 URL obj = new URL(controllerMitigateURL+"/port_scanning/"+switchDPID+"/"+dstIp);
                                                 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -122,6 +123,8 @@ public class PortScanner_RateLimiter extends ForwardingBase implements IOFMessag
                                             } catch (IOException e) {
                                                 log.info(e.getMessage());
                                             }
+
+                                             */
 
                                             logger.info("ATTACK MITIGATED");
                                         }

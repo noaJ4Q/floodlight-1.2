@@ -115,8 +115,9 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
                                         {
                                             String controllerMitigateURL = "http://localhost:8001";
                                             String switchDPID = "00:00:f2:20:f9:45:4c:4e"; // SW3 POR DEFECTO
-                                            //logger.info("VERTICAL SCAN DETECTED!!!: Attacker is " + dstIp + " Victim is  " + srcIp);
+                                            logger.info("VERTICAL SCAN DETECTED!!!: Attacker is " + dstIp + " Victim is  " + srcIp);
 
+                                            /*
                                             try {
                                                 URL obj = new URL(controllerMitigateURL+"/port_scanning/"+switchDPID+"/"+dstIp);
                                                 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -131,6 +132,8 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
                                             } catch (IOException e) {
                                                 //log.info(e.getMessage());
                                             }
+
+                                             */
 
                                             //logger.info("Firewall rule added to block the attacker "+dstIp );
                                         }
