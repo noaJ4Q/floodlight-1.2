@@ -106,7 +106,7 @@ public class PortScanner_RateLimiter extends ForwardingBase implements IOFMessag
                                         {
                                             String controllerMitigateURL = "http://localhost:8001";
                                             String switchDPID = "00:00:f2:20:f9:45:4c:4e"; // SW3 POR DEFECTO
-                                            logger.info("VERTICAL SCAN DETECTED!!!: Attacker is " + dstIp + " Victim is  " + srcIp);
+                                            logger.info("THRESHOLD VIOLATED (5): PORT SCANNING DETECTED: Attacker is " + dstIp + " Victim is  " + srcIp);
 
                                             try {
                                                 URL obj = new URL(controllerMitigateURL+"/port_scanning/"+switchDPID+"/"+dstIp);
