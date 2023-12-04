@@ -248,7 +248,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			if (responseCode == HttpURLConnection.HTTP_OK) {
 				thresholdEnabled = false;
 				log.info("ATTACK MITIGATED");
-				resetMatches();
+				//resetMatches();
 				// limpiar matches: /wm/staticflowpusher/clear/<switch>/json
 			} else {
 				System.out.println("La solicitud GET no fue exitosa.");
