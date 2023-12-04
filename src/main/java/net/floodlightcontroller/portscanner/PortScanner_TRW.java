@@ -90,12 +90,12 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
                     if (ip.getProtocol().equals(IpProtocol.TCP)) {
                         TCP tcp = (TCP) ip.getPayload();
                         int flags=tcp.getFlags();
-                        logger.info("From TRW Scanner "+srcIp + "to Destn IPaddress:" + dstIp + "flags " + flags  );
+                        //logger.info("From TRW Scanner "+srcIp + "to Destn IPaddress:" + dstIp + "flags " + flags  );
                         try
                         {
                             if(flags==20)
                             {
-                                logger.info("flags == 20");
+                                //logger.info("flags == 20");
                                 if(vertiscan.containsKey(srcIp.toString()))
                                 {
                                     temp=vertiscan.get(srcIp.toString());
@@ -115,7 +115,7 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
                                         {
                                             String controllerMitigateURL = "http://localhost:8001";
                                             String switchDPID = "00:00:f2:20:f9:45:4c:4e"; // SW3 POR DEFECTO
-                                            logger.info("VERTICAL SCAN DETECTED!!!: Attacker is " + dstIp + " Victim is  " + srcIp);
+                                            //logger.info("VERTICAL SCAN DETECTED!!!: Attacker is " + dstIp + " Victim is  " + srcIp);
 
                                             try {
                                                 URL obj = new URL(controllerMitigateURL+"/port_scanning/"+switchDPID+"/"+dstIp);
@@ -129,10 +129,10 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
                                                     System.out.println("La solicitud GET no fue exitosa.");
                                                 }
                                             } catch (IOException e) {
-                                                log.info(e.getMessage());
+                                                //log.info(e.getMessage());
                                             }
 
-                                            logger.info("Firewall rule added to block the attacker "+dstIp );
+                                            //logger.info("Firewall rule added to block the attacker "+dstIp );
                                         }
                                     }
                                     else
@@ -159,19 +159,19 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
                                         //logger.info(threshold.toString());
 
                                         count= temp.get(dstIp.toString());
-                                        System.out.print("HZ scan Before incrementing count " + count);
+                                        //System.out.print("HZ scan Before incrementing count " + count);
                                         count++;
                                         //System.out.print(count);
                                         temp.put(dstIp.toString(), count);
-                                        System.out.print("HZ scan after incrementing count " + count);
+                                        //System.out.print("HZ scan after incrementing count " + count);
 
                                         //logger.info(threshold.get(dstIp.toString()).toString());
                                         if(count > threshold)
                                         {
-                                            logger.info("HORIZONTAL SCAN DETECTED!!!: Attacker is " + dstIp + " Victim is  " + srcIp);
+                                            //logger.info("HORIZONTAL SCAN DETECTED!!!: Attacker is " + dstIp + " Victim is  " + srcIp);
                                             String command = "curl -X POST -d {\"src-ip\":\"" + dstIp + "\",\"action\":\"DENY\"} http://localhost:8080/wm/firewall/rules/json";
                                             Process p = Runtime.getRuntime().exec(command);
-                                            logger.info("Firewall rule added to block the attacker "+dstIp );
+                                            //logger.info("Firewall rule added to block the attacker "+dstIp );
                                         }
                                     }
                                     else
@@ -191,7 +191,7 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
                             }
                             else if(flags==18)
                             {
-                                logger.info("flags == 18");
+                                //logger.info("flags == 18");
                                 // HashMap<String,Integer> temp_hz=new HashMap<String,Integer>();
                                 for(HashMap<String, Integer> temp_hz1:horizscan.values())
                                 {
@@ -199,7 +199,7 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
                                     {
                                         int count_hz=temp_hz1.get(dstIp.toString());
                                         temp_hz1.put(dstIp.toString(), count_hz-1);
-                                        System.out.println("After decrementing count" + count_hz);
+                                        //System.out.println("After decrementing count" + count_hz);
                                     }
                                 }
 
@@ -289,7 +289,7 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
         macAddresses = new ConcurrentSkipListSet<Long>();
         logger = Logger.getLogger("PortScanLog");
 
-        System.out.println("Threshold Random Walk .........");
+        //System.out.println("Threshold Random Walk .........");
 
     }
 
@@ -298,7 +298,7 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
     @Override
     public void startUp(FloodlightModuleContext context) {
         floodlightProvider.addOFMessageListener(OFType.PACKET_IN, this);
-        System.out.println("In TRW startup");
+        logger.info("Port scanner module started");
 
     }
 

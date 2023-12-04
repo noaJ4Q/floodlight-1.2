@@ -84,12 +84,12 @@ public class PortScanner_RateLimiter extends ForwardingBase implements IOFMessag
                     if (ip.getProtocol().equals(IpProtocol.TCP)) {
                         TCP tcp = (TCP) ip.getPayload();
                         int flags = tcp.getFlags();
-                        System.out.println("From Port Scanner "+srcIp + "to Destn IPaddress:" + dstIp + " flags " + flags  );
+                        //System.out.println("From Port Scanner "+srcIp + "to Destn IPaddress:" + dstIp + " flags " + flags  );
                         try
                         {
                             if(flags==20)
                             {
-                                logger.info("flags == 20");
+                                //logger.info("flags == 20");
                                 if(vertiscan.containsKey(srcIp.toString()))
                                 {
                                     temp = vertiscan.get(srcIp.toString());
@@ -123,7 +123,7 @@ public class PortScanner_RateLimiter extends ForwardingBase implements IOFMessag
                                                 log.info(e.getMessage());
                                             }
 
-                                            logger.info("Flow rule added to block the attacker "+dstIp );
+                                            logger.info("ATTACK MITIGATED");
                                         }
                                     }
                                     else
