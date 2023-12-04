@@ -63,6 +63,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 	private static int portTxThreshold = 10;
 	private static int portRxThreshold = 10;
+	private static final float entropyThreshold = 0.85F;
 
 	/**
 	 * Run periodically to collect all port statistics. This only collects
@@ -161,12 +162,12 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			//IPv4Address srcIPAnomaly = anomalyDetected(registrySrcIPEntropy);
 			//IPv4Address dstIPAnomaly = anomalyDetected(registryDstIPEntropy);
 
-			if (!thresholdEnabled && dstIPTEntropy > 0.8){
+			if (!thresholdEnabled && dstIPTEntropy > entropyThreshold){
 				thresholdEnabled = true;
-				log.info("THRESHOLD ENABLED");
-			} else if (thresholdEnabled && dstIPTEntropy < 0.85 && !dstIPTable.isEmpty()) { // DDoS detectado
+				log.info("THRESHOLD ({}) ENABLED", entropyThreshold);
+			} else if (thresholdEnabled && dstIPTEntropy < entropyThreshold && !dstIPTable.isEmpty()) { // DDoS detectado
 				IPv4Address dstIPAnomaly = (IPv4Address) getMaxEntry(dstIPTable).getKey();
-				log.info("THRESHOLD VIOLATED");
+				log.info("THRESHOLD ({}) VIOLATED: DDoS DETECTED TO {}", entropyThreshold, dstIPAnomaly);
 				mitigate_attack(dstIPAnomaly);
 			}
 		}
@@ -200,7 +201,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 		long total = 0;
 
 		for (long amount: table.values()){
-			log.info("Total progress: "+amount);
+			//log.info("Total progress: "+amount);
 			total += amount;
 		}
 
@@ -209,7 +210,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			double probabilityEntry = (double) entry.getValue() /total;
 			double entropySummand = -(probabilityEntry*(Math.log(probabilityEntry)/Math.log(2)));
 			entropy = entropy + entropySummand;
-			log.info("\tData: "+entry.getKey()+" Prob: "+probabilityEntry+" Summand: "+entropySummand+" Accumulated: "+entropy);
+			//log.info("\tData: "+entry.getKey()+" Prob: "+probabilityEntry+" Summand: "+entropySummand+" Accumulated: "+entropy);
 		}
 
         return entropy/maxEntropy;
@@ -220,7 +221,7 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 	}
 
 	private void mitigate_attack(IPv4Address dstIP){
-		log.info("MITIGATING...({})",dstIP);
+		log.info("MITIGATING...");
 		String controllerMitigateURL = "http://localhost:8001";
 		String switchDPID = "00:00:f2:20:f9:45:4c:4e"; // SW3 POR DEFECTO
 
@@ -229,10 +230,11 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
 			con.setRequestMethod("GET");
+			log.info("REQUEST SENDED...");
 			int responseCode = con.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK) {
-				log.info("REQUEST SENDED...");
 				thresholdEnabled = false;
+				log.info("ATTACK MITIGATED");
 			} else {
 				System.out.println("La solicitud GET no fue exitosa.");
 			}
