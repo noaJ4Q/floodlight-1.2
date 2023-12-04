@@ -248,6 +248,8 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 			if (responseCode == HttpURLConnection.HTTP_OK) {
 				thresholdEnabled = false;
 				log.info("ATTACK MITIGATED");
+				resetMatches();
+				// limpiar matches: /wm/staticflowpusher/clear/<switch>/json
 			} else {
 				System.out.println("La solicitud GET no fue exitosa.");
 			}
@@ -257,6 +259,27 @@ public class StatisticsCollector implements IFloodlightModule, IStatisticsServic
 
 		 */
 
+	}
+
+	private void resetMatches(){
+		String controllerUrl = "http://localhost:8080";
+		String switchDPID = "00:00:f2:20:f9:45:4c:4e"; // SW3 POR DEFECTO
+
+		try {
+			URL obj = new URL(controllerUrl+"/wm/staticflowpusher/clear/"+switchDPID+"/json");
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setRequestMethod("GET");
+			//log.info("REQUEST SENDED...");
+			int responseCode = con.getResponseCode();
+			if (responseCode == HttpURLConnection.HTTP_OK) {
+				log.info("MATCHES RESETED");
+			} else {
+				System.out.println("La solicitud GET no fue exitosa.");
+			}
+		} catch (IOException e) {
+			log.info(e.getMessage());
+		}
 	}
 
 	private <K, V extends Comparable<V>> Map.Entry<K, V> getMaxEntry(Map<K, V> map){
