@@ -4,6 +4,8 @@ package net.floodlightcontroller.portscanner;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -116,7 +118,7 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
                                             String switchDPID = "00:00:f2:20:f9:45:4c:4e"; // SW3 POR DEFECTO
                                             logger.info("THRESHOLD VIOLATED (5): PORT SCANNING DETECTED: Attacker is " + dstIp + " Victim is  " + srcIp);
 
-                                            /*
+
                                             try {
                                                 URL obj = new URL(controllerMitigateURL+"/port_scanning/"+switchDPID+"/"+dstIp);
                                                 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -124,7 +126,7 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
                                                 con.setRequestMethod("GET");
                                                 int responseCode = con.getResponseCode();
                                                 if (responseCode == HttpURLConnection.HTTP_OK) {
-                                                    log.info("REQUEST SENDED...");
+                                                    log.info("REQUEST TO MITIGATION SENDED...");
                                                 } else {
                                                     System.out.println("La solicitud GET no fue exitosa.");
                                                 }
@@ -132,7 +134,7 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
                                                 log.info(e.getMessage());
                                             }
 
-                                             */
+
                                         }
                                     }
                                     else
