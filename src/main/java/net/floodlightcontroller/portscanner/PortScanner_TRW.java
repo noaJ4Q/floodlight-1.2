@@ -201,7 +201,7 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
                                     {
                                         int count_hz=temp_hz1.get(dstIp.toString());
                                         temp_hz1.put(dstIp.toString(), count_hz-1);
-                                        System.out.println("After decrementing count" + count_hz);
+                                        //System.out.println("After decrementing count" + count_hz);
                                     }
                                 }
 
