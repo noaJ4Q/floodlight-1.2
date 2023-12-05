@@ -281,7 +281,7 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
     @Override
     public void startUp(FloodlightModuleContext context) {
         floodlightProvider.addOFMessageListener(OFType.PACKET_IN, this);
-        logger.info("In TRW startup");
+        logger.info("Port scanning detector started");
 
     }
 
