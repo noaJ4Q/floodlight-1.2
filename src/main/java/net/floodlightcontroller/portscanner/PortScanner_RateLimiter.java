@@ -252,7 +252,7 @@ public class PortScanner_RateLimiter extends ForwardingBase implements IOFMessag
         macAddresses = new ConcurrentSkipListSet<Long>();
         logger = Logger.getLogger("PortScanLog");
 
-        System.out.println("PortScanner.........");
+        System.out.println("PortScanner.........SI");
 
     }
 

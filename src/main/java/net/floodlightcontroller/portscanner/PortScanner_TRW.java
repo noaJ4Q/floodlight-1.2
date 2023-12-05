@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.FileHandler;
-import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import net.floodlightcontroller.core.FloodlightContext;
@@ -39,6 +38,8 @@ import org.projectfloodlight.openflow.types.EthType;
 import org.projectfloodlight.openflow.types.IPv4Address;
 import org.projectfloodlight.openflow.types.IpProtocol;
 import org.projectfloodlight.openflow.types.OFPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterManagerService,
@@ -46,7 +47,7 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
 
     protected IFloodlightProviderService floodlightProvider;
     protected Set<Long> macAddresses;
-    protected static Logger logger;
+    protected static Logger logger = LoggerFactory.getLogger(PortScanner_TRW.class);;
     protected static FileHandler fh;
     protected static SimpleFormatter formatter = new SimpleFormatter();
 
@@ -269,7 +270,7 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
     public void init(FloodlightModuleContext context) throws FloodlightModuleException {
         floodlightProvider = context.getServiceImpl(IFloodlightProviderService.class);
         macAddresses = new ConcurrentSkipListSet<Long>();
-        logger = Logger.getLogger("PortScanLog");
+        logger = LoggerFactory.getLogger(PortScanner_TRW.class);
 
         System.out.println("Threshold Random Walk .........");
 
@@ -280,7 +281,7 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
     @Override
     public void startUp(FloodlightModuleContext context) {
         floodlightProvider.addOFMessageListener(OFType.PACKET_IN, this);
-        System.out.println("In TRW startup");
+        logger.info("In TRW startup");
 
     }
 
