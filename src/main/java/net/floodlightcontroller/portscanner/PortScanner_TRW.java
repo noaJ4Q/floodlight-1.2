@@ -89,12 +89,12 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
                     if (ip.getProtocol().equals(IpProtocol.TCP)) {
                         TCP tcp = (TCP) ip.getPayload();
                         int flags=tcp.getFlags();
-                        logger.info("From TRW Scanner "+srcIp + "to Destn IPaddress:" + dstIp + "flags " + flags  );
+                        logger.info("PORT SCANNER response from: "+srcIp + "to: " + dstIp + " FLAGS: " + flags  );
                         try
                         {
                             if(flags==20)
                             {
-                                logger.info("flags == 20");
+                                //logger.info("flags == 20");
                                 if(vertiscan.containsKey(srcIp.toString()))
                                 {
                                     temp=vertiscan.get(srcIp.toString());
@@ -112,10 +112,27 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
                                         //logger.info(threshold.get(dstIp.toString()).toString());
                                         if(count > threshold)
                                         {
-                                            logger.info("VERTICAL SCAN DETECTED!!!: Attacker is " + dstIp + " Victim is  " + srcIp);
-                                            String command = "curl -X POST -d {\"src-ip\":\"" + dstIp + "\",\"action\":\"DENY\"} http://localhost:8080/wm/firewall/rules/json";
-                                            Process p = Runtime.getRuntime().exec(command);
-                                            logger.info("Firewall rule added to block the attacker "+dstIp );
+                                            String controllerMitigateURL = "http://localhost:8001";
+                                            String switchDPID = "00:00:f2:20:f9:45:4c:4e"; // SW3 POR DEFECTO
+                                            logger.info("THRESHOLD VIOLATED (5): PORT SCANNING DETECTED: Attacker is " + dstIp + " Victim is  " + srcIp);
+
+                                            /*
+                                            try {
+                                                URL obj = new URL(controllerMitigateURL+"/port_scanning/"+switchDPID+"/"+dstIp);
+                                                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+                                                con.setRequestMethod("GET");
+                                                int responseCode = con.getResponseCode();
+                                                if (responseCode == HttpURLConnection.HTTP_OK) {
+                                                    log.info("REQUEST SENDED...");
+                                                } else {
+                                                    System.out.println("La solicitud GET no fue exitosa.");
+                                                }
+                                            } catch (IOException e) {
+                                                log.info(e.getMessage());
+                                            }
+
+                                             */
                                         }
                                     }
                                     else
@@ -272,7 +289,7 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
         macAddresses = new ConcurrentSkipListSet<Long>();
         logger = LoggerFactory.getLogger(PortScanner_TRW.class);
 
-        System.out.println("Threshold Random Walk .........");
+        //System.out.println("Threshold Random Walk .........");
 
     }
 
