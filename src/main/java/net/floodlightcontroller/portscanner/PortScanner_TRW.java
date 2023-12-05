@@ -186,7 +186,7 @@ public class PortScanner_TRW extends ForwardingBase implements IOFMessageFilterM
                                     attacker.put(dstIp.toString(), 1);
                                     horizscan.put(srcPort, attacker);
                                     //logger.info("added");
-                                    System.out.println(horizscan.size());
+                                    //System.out.println(horizscan.size());
                                 }
                             }
                             else if(flags==18)
